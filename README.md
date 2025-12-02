@@ -64,7 +64,7 @@ If you work on RAG, memory systems, or LLM infrastructure, I'd appreciate your e
 
 ## Files
 
-- `hierarchical_bookmark_retrieval_spec_2.md` — The full spec (v2)
+- `hierarchical_bookmark_retrieval_spec_v2.md` — The full spec (v2)
 
 ## License
 
