@@ -68,7 +68,7 @@ If you work on RAG, memory systems, or LLM infrastructure, I'd appreciate your e
 
 ## License
 
-MIT — do whatever you want with it.
+[CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) — use it however you want, just give credit.
 
 ## Contact
 
