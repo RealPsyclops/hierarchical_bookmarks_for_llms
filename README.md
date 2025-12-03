@@ -1,6 +1,6 @@
 # Hierarchical Bookmark Retrieval for LLMs
 
-A spec for improving context retrieval in long AI conversations.
+A spec and simulation for improving context retrieval in long AI conversations.
 
 ## The Problem
 
@@ -16,6 +16,25 @@ Instead of treating all conversation history equally, periodically generate **bo
 - Foundational context the user provided
 
 When retrieving context for a new query, search bookmarks first, then fall back to standard similarity search.
+
+## Try the Simulation
+
+```bash
+python simulate.py
+```
+
+No dependencies required. The simulation demonstrates the core concept using mock data and rule-based scoring:
+
+```
+Average performance across all queries:
+  Method                    Avg F1
+  ----------------------------------------
+  Standard Similarity       0.19
+  Recency Weighted          0.12
+  Hierarchical Bookmarks    0.56   ← 3x better
+```
+
+The bookmark system finds relevant content 3x more often than baseline approaches because it pre-identifies what mattered during the bookmark generation phase.
 
 ## What's in the Spec
 
@@ -46,13 +65,20 @@ When retrieving context for a new query, search bookmarks first, then fall back 
 - Simple recency weighting is "good enough"
 - Engineering time is better spent elsewhere
 
-## Status
+## Files
 
-This is a **spec, not an implementation**. It's detailed enough to hand to an engineer, but it hasn't been built or validated yet.
+| File | Description |
+|------|-------------|
+| `simulate.py` | Working demo — run this first |
+| `hierarchical_bookmark_retrieval_spec_v2.md` | Full technical spec |
+
+## Future Direction (v3)
+
+Exploring stacking [Contextual Retrieval](https://www.anthropic.com/news/contextual-retrieval) underneath the bookmark layer—judge importance at summarization time so you never need a full-conversation scan. Two layers of compression.
 
 ## Background
 
-I wrote this with no ML engineering experience, using AI (Claude) to critique and refine it through multiple versions. The result feels real—but I genuinely don't know if it is.
+I wrote this with no ML engineering experience, using AI (Claude) to critique and refine it through multiple versions. The simulation exists because someone correctly pointed out that a spec without code is easy to ignore.
 
 **I'm looking for feedback:**
 - What's naive?
@@ -61,10 +87,6 @@ I wrote this with no ML engineering experience, using AI (Claude) to critique an
 - Would you actually build this?
 
 If you work on RAG, memory systems, or LLM infrastructure, I'd appreciate your eyes on it.
-
-## Files
-
-- `hierarchical_bookmark_retrieval_spec_v2.md` — The full spec (v2)
 
 ## License
 
