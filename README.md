@@ -65,10 +65,12 @@ Average performance across all queries:
   ----------------------------------------
   Standard Similarity       0.19
   Recency Weighted          0.12
-  Hierarchical Bookmarks    0.56   ← 3x better
+  Hierarchical Bookmarks    0.38   ← 2x better
 ```
 
-The bookmark system finds relevant content 3x more often than baseline approaches because it pre-identifies what mattered during the bookmark generation phase.
+The bookmark system finds relevant content 2x more often than baseline approaches because it pre-identifies what mattered during the bookmark generation phase.
+
+**Note:** This simulation uses keyword overlap (Jaccard similarity), not vector embeddings. Real embeddings would narrow the gap somewhat, but the structural advantage of searching a smaller, higher-quality haystack remains.
 
 ## What's in the Spec
 

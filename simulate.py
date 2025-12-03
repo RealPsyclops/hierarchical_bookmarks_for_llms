@@ -13,7 +13,6 @@ import string
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from typing import List, Tuple, Set
-import math
 
 
 # =============================================================================
@@ -314,11 +313,24 @@ def hierarchical_bookmark_retrieval(
     Method C: Hierarchical bookmark retrieval (THE PROPOSED SYSTEM)
     
     Returns: List of (chunk, score, retrieval_tier)
+    
+    Retrieval order:
+    1. IMMEDIATE CONTEXT: Always include last 2 messages (prevents "what about that?" failures)
+    2. BOOKMARKS: Search pre-identified important moments
+    3. FALLBACK: Standard similarity search for remaining budget
     """
     query_keywords = set(word.lower().strip('.,!?') for word in query.split() if len(word) > 4)
     
     retrieved = []
     retrieved_ids = set()
+    
+    # === TIER 0: IMMEDIATE CONTEXT (Recency Guarantee) ===
+    # Always include the last 2 messages to prevent "starvation" on
+    # queries like "What about that?" which have zero keyword overlap
+    immediate_context = chunks[-2:] if len(chunks) >= 2 else chunks
+    for chunk in immediate_context:
+        retrieved.append((chunk, 1.0, "immediate:recency"))
+        retrieved_ids.add(chunk.id)
     
     # === TIER 1: BOOKMARK SEARCH ===
     bookmark_scores = []
@@ -331,12 +343,13 @@ def hierarchical_bookmark_retrieval(
     bookmark_scores.sort(key=lambda x: x[1], reverse=True)
     
     # === TIER 2: EXPAND TO RAW CHUNKS ===
+    bookmark_budget = int(context_budget * 0.7)  # Cast to int for clean comparison
     for bookmark, score in bookmark_scores[:3]:  # Top 3 bookmarks
         if score < 0.1:
             continue
         
         for chunk_id in bookmark.source_chunk_ids:
-            if chunk_id not in retrieved_ids and len(retrieved) < context_budget * 0.7:
+            if chunk_id not in retrieved_ids and len(retrieved) < bookmark_budget:
                 chunk = next((c for c in chunks if c.id == chunk_id), None)
                 if chunk:
                     retrieved.append((chunk, score, f"bookmark:{bookmark.bookmark_type}"))
