@@ -6,6 +6,40 @@ A spec and simulation for improving context retrieval in long AI conversations.
 
 Long conversations with LLMs degrade. The AI forgets what you told it 50 messages ago. You repeat yourself. It loses track of decisions you made together. Context windows fill up with noise instead of signal.
 
+## How It Works
+
+```mermaid
+flowchart LR
+    subgraph Standard RAG
+        A[Query] --> B[Search ALL chunks]
+        B --> C[Return by similarity]
+    end
+```
+
+```mermaid
+flowchart LR
+    subgraph Hierarchical Bookmark Retrieval
+        D[Query] --> E[Search bookmarks first]
+        E --> F{Found relevant?}
+        F -->|Yes| G[Expand to source chunks]
+        F -->|No| H[Fall back to standard RAG]
+        G --> I[Return high-signal context]
+        H --> I
+    end
+```
+
+```mermaid
+flowchart TB
+    subgraph Bookmark Generation
+        J[Long conversation] --> K[LLM reviews full history]
+        K --> L[Identifies what mattered]
+        L --> M[Decisions]
+        L --> N[Corrections]
+        L --> O[Validations]
+        L --> P[Key context]
+    end
+```
+
 ## The Idea
 
 Instead of treating all conversation history equally, periodically generate **bookmarks**—LLM-judged summaries of what actually mattered:
