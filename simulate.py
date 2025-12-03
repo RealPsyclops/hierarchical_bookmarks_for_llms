@@ -150,9 +150,17 @@ def generate_bookmarks(conversation: List[ConversationChunk]) -> List[Bookmark]:
     Simulate LLM bookmark generation using rule-based heuristics.
     
     In the real system, this would be a single LLM call that reviews
-    the full conversation and extracts important moments.
+    the full conversation and extracts important moments. See the spec
+    for the actual prompt.
     
-    Here we use pattern matching to demonstrate the concept.
+    Here we use pattern matching (looking for keywords like "DECISION:",
+    "exactly", "budget", etc.) to demonstrate the concept.
+    
+    NOTE: The simulation proves that IF you can identify importance 
+    (which we simulate with seeded patterns), the hierarchical retrieval 
+    structure beats flat search. The LLM's actual judgment quality is 
+    what makes or breaks a production system—that's why the spec includes 
+    a baseline test before building.
     """
     
     bookmarks = []
@@ -230,8 +238,17 @@ def generate_bookmarks(conversation: List[ConversationChunk]) -> List[Bookmark]:
 
 def mock_similarity(query_keywords: Set[str], target_keywords: Set[str]) -> float:
     """
-    Simulate cosine similarity using keyword overlap.
-    In real system, this would be actual embedding similarity.
+    Simulates semantic similarity using Jaccard index (keyword overlap).
+    
+    NOTE: In a production implementation, this would be replaced by Cosine 
+    Similarity on vector embeddings (e.g., OpenAI text-embedding-3-small, 
+    Cohere, or open-source alternatives), which handles synonyms and 
+    semantic meaning much better than this strict keyword match.
+    
+    This simulation proves the STRUCTURAL advantage (reducing the search 
+    space to high-value nodes) rather than the quality of similarity matching.
+    The hierarchical approach wins because it searches a smaller, higher-quality 
+    haystack—not because of better similarity scoring.
     """
     if not query_keywords or not target_keywords:
         return 0.0
